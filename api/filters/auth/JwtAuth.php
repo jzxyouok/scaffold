@@ -12,13 +12,13 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\filters\auth;
+namespace api\filters\auth;
 
 use Yii;
 use yii\base\ActionFilter;
 use yii\helpers\ArrayHelper;
 use Firebase\JWT\JWT;
-use app\base\ApiException;
+use api\base\ApiException;
 
 /**
  * JwtAuth

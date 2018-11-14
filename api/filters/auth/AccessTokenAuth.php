@@ -12,11 +12,11 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\filters\auth;
+namespace api\filters\auth;
 
 use Yii;
 use yii\filters\auth\AuthMethod;
-use app\base\ApiException;
+use api\base\ApiException;
 
 /**
  * AccessTokenAuth

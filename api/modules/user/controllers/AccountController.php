@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\modules\user\controllers;
+namespace api\modules\user\controllers;
 
 /**
  * 账号API
@@ -24,7 +24,7 @@ namespace app\modules\user\controllers;
  * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
  * @link      http://www.yiiplus.com
  */
-class AccountController extends \app\modules\Controller
+class AccountController extends \api\modules\Controller
 {
     /**
      * 列表

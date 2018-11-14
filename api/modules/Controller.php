@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\modules;
+namespace api\modules;
 
 use Yii;
 use yii\web\Response;
@@ -54,22 +54,22 @@ abstract class Controller extends \yii\rest\Controller
         ];
 
         $behaviors['tokenValidate'] = [
-            'class' => 'app\filters\auth\JwtAuth',
+            'class' => 'api\filters\auth\JwtAuth',
             'except' => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['timestampValidate'] = [
-            'class' => 'app\filters\auth\TimestampAuth',
+            'class' => 'api\filters\auth\TimestampAuth',
             'except' => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['authValidate'] = [
-            'class' => 'app\filters\auth\AccessTokenAuth',
+            'class' => 'api\filters\auth\AccessTokenAuth',
             'except'  => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['rateLimiter'] = [
-            'class' => 'app\filters\auth\RateLimiterAuth',
+            'class' => 'api\filters\auth\RateLimiterAuth',
             'enableRateLimitHeaders' => true,
             'except'  => $this->isDebug ? ['*'] : []
         ];
@@ -82,7 +82,7 @@ abstract class Controller extends \yii\rest\Controller
      * 此时大部分behaviors将不会执行 e.g:
      * ```php
      *  $behaviors['authValidate'] = [
-     *      'class' => 'app\extensions\auth\AccessTokenAuth',
+     *      'class' => 'api\extensions\auth\AccessTokenAuth',
      *      'except'  => $this->isDebug ? ['*'] : [] //except属性对isDebug进行支持
      *  ];
      * ```
