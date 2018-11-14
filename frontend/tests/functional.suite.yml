@@ -1,4 +1,4 @@
-suite_namespace: frontend.conf\tests\functional
+suite_namespace: frontend\tests\functional
 actor: FunctionalTester
 modules:
     enabled:

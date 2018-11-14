@@ -34,6 +34,9 @@ phpunit.phar
 # vagrant runtime
 /.vagrant
 
+# docker
+/docker-compose.yaml
+
 # ignore generated files
 /frontend/web/index.php
 /frontend/web/index-test.php

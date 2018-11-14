@@ -1,4 +1,4 @@
-namespace: frontend.conf\tests
+namespace: frontend\tests
 actor_suffix: Tester
 paths:
     tests: tests

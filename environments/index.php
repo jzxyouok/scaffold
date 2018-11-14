@@ -33,8 +33,8 @@ return [
         'path' => 'dev',
         'setWritable' => [
             'console/runtime',
-            'frontend.conf/runtime',
-            'frontend.conf/web/assets',
+            'frontend/runtime',
+            'frontend/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'api/runtime',
@@ -46,7 +46,7 @@ return [
         ],
         'setCookieValidationKey' => [
             'common/config/codeception-local.php',
-            'frontend.conf/config/main-local.php',
+            'frontend/config/main-local.php',
             'backend/config/main-local.php',
             'api/config/main-local.php',
         ],
@@ -55,8 +55,8 @@ return [
         'path' => 'test',
         'setWritable' => [
             'console/runtime',
-            'frontend.conf/runtime',
-            'frontend.conf/web/assets',
+            'frontend/runtime',
+            'frontend/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'api/runtime',
@@ -68,7 +68,7 @@ return [
         ],
         'setCookieValidationKey' => [
             'common/config/codeception-local.php',
-            'frontend.conf/config/main-local.php',
+            'frontend/config/main-local.php',
             'backend/config/main-local.php',
             'api/config/main-local.php',
         ],
@@ -77,8 +77,8 @@ return [
         'path' => 'simu',
         'setWritable' => [
             'console/runtime',
-            'frontend.conf/runtime',
-            'frontend.conf/web/assets',
+            'frontend/runtime',
+            'frontend/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'api/runtime',
@@ -88,7 +88,7 @@ return [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'frontend.conf/config/main-local.php',
+            'frontend/config/main-local.php',
             'backend/config/main-local.php',
             'api/config/main-local.php',
         ],
@@ -97,8 +97,8 @@ return [
         'path' => 'prod',
         'setWritable' => [
             'console/runtime',
-            'frontend.conf/runtime',
-            'frontend.conf/web/assets',
+            'frontend/runtime',
+            'frontend/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'api/runtime',
@@ -108,7 +108,7 @@ return [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'frontend.conf/config/main-local.php',
+            'frontend/config/main-local.php',
             'backend/config/main-local.php',
             'api/config/main-local.php',
         ],
