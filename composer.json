@@ -71,7 +71,7 @@
     "scripts": {
         "build": [
           "php init --env=development --overwrite=y",
-          "composer install -vvv"
+          "composer install --prefer-dist -vvv",
           "@docker:start",
           "docker-compose ps"
         ],
@@ -79,8 +79,7 @@
           "docker-compose up --force-recreate -d"
         ],
         "docker:cleanup": [
-            "docker-compose rm -fsv"
+          "docker-compose rm -fsv"
         ]
     }
 }
-、
