@@ -34,22 +34,11 @@ services:
     restart: always
     volumes:
     - ./:/www
-    - ./crontab/crontab:/etc/crontab
+    - ./console/crontab:/etc/crontab
     working_dir: /www
     links:
     - mysql:mysql
     - redis:redis
-  queue:
-    container_name: queue
-    build: ./docker/files/crond
-    restart: always
-    volumes:
-    - ./:/www
-    working_dir: /www
-    links:
-    - mysql:mysql
-    - redis:redis
-    command: ./yii queue/listen
   mysql:
     container_name: mysql
     image: daocloud.io/library/mysql:5.6
@@ -59,7 +48,7 @@ services:
     ports:
     - "3306:3306"
     volumes:
-    - ./docker/data/var_lib_mysql:/var/lib/mysql
+    - ./docker/runtime/var_lib_mysql:/var/lib/mysql
     environment:
     - MYSQL_ROOT_PASSWORD=root
     restart: always
@@ -72,7 +61,7 @@ services:
     ports:
     - "6379:6379"
     volumes:
-    - ./docker/data/var_lib_redis:/data
+    - ./docker/runtime/var_lib_redis:/data
     command: redis-server --appendonly yes
   phpmyadmin:
     container_name: phpmyadmin
