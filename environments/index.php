@@ -29,40 +29,88 @@
  * ```
  */
 return [
-    'Development' => [
+    'development' => [
         'path' => 'dev',
         'setWritable' => [
-            'backend/runtime',
-            'backend/web/assets',
             'console/runtime',
             'frontend/runtime',
             'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
         ],
         'setExecutable' => [
             'yii',
             'yii_test',
         ],
         'setCookieValidationKey' => [
-            'backend/config/main-local.php',
             'common/config/codeception-local.php',
             'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
         ],
     ],
-    'Production' => [
-        'path' => 'prod',
+    'testing' => [
+        'path' => 'test',
         'setWritable' => [
-            'backend/runtime',
-            'backend/web/assets',
             'console/runtime',
             'frontend/runtime',
             'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+            'yii_test',
+        ],
+        'setCookieValidationKey' => [
+            'common/config/codeception-local.php',
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
+        ],
+    ],
+    'simulation' => [
+        'path' => 'simu',
+        'setWritable' => [
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
         ],
         'setExecutable' => [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'backend/config/main-local.php',
             'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
+        ],
+    ],
+    'production' => [
+        'path' => 'prod',
+        'setWritable' => [
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+        ],
+        'setCookieValidationKey' => [
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
         ],
     ],
 ];
