@@ -101,6 +101,11 @@ environments/            contains environment-based overrides
     
     # 初始化数据库
     docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'
+
+    # 代码规范检查
+    ./vendor/bin/phpcs --standard=PSR2 --ignore=tests,docs/,docker/,vendor/,console/migrations,backend/runtime,frontend/runtime,api/runtime,console/runtime,frontend/web/assets,backend/web/assets,api/web/assets -n --colors ./
+    # 质量检查工具
+    ./vendor/bin/phpmd environments,common,console,backend,frontend,api text phpmd.xml --exclude tests,docs/,docker/,vendor/,console/migrations,backend/runtime,frontend/runtime,api/runtime,console/runtime,frontend/web/assets,backend/web/assets,api/web/assets
     ```    
 
 - 访问地址

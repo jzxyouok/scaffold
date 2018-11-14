@@ -54,7 +54,7 @@ before_script:
 codeview:phpcs:
   stage: test
   script:
-    - phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -n --colors ./
+    - phpcs --standard=PSR2 --ignore=tests,docs/,docker/,vendor/,console/migrations -n --colors ./
   except:
     refs:
       - develop
@@ -64,7 +64,7 @@ codeview:phpcs:
 codeview:phpmd:
   stage: test
   script:
-    - phpmd common,console,backend,frontend,app text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests --suffixes php
+    - phpmd environments,common,console,backend,frontend,api text phpmd.xml --exclude tests,docs/,docker/,vendor/,console/migrations
   except:
     refs:
       - develop
