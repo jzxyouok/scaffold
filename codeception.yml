@@ -3,7 +3,6 @@ include:
     - common
     - frontend
     - backend
-    - app
 paths:
     log: console/runtime/logs
 settings:
