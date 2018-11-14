@@ -118,6 +118,12 @@ environments/            包含基于环境的覆盖
     
     # 初始化数据库
     docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'
+
+    # 代码质量检测
+    ./vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests,admin/runtime/,app/runtime/,console/runtime/,pc/runtime/,h5/runtime/
+    exit $?
+    ./vendor/bin/phpcs --standard=PSR1,PSR2,PEAR --ignore=docs/,docker/,vendor/,console/migrations/,tests,admin/runtime/,app/runtime/,console/runtime/,pc/runtime/,h5/runtime/ -n --colors ./
+    exit $?
     ```    
 
 - 访问地址
