@@ -74,6 +74,10 @@
             "php init --env=development --overwrite=y",
             "composer install --prefer-dist -vvv",
             "@docker:start",
+            "docker-compose exec -T cgi ./yii migrate --migrationPath=@yii/rbac/migrations --interactive=0",
+            "docker-compose exec -T cgi ./yii migrate --migrationPath=@yiiplus/desktop/migrations --interactive=0",
+            "docker-compose exec -T cgi ./yii migrate --migrationPath=@yiiplus/kvstore/migrations --interactive=0",
+            "docker-compose exec -T cgi ./yii migrate --interactive=0",
             "docker-compose ps"
         ],
         "docker:start": [

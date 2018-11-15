@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "609efb98437d41f5dcfeae85cc487f72",
+    "content-hash": "5669c2588a2936b3641822293d977c91",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -2686,6 +2686,58 @@
                 "url"
             ],
             "time": "2017-03-20T17:10:46+00:00"
+        },
+        {
+            "name": "hzhihua/yii2-dump",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Hzhihua/yii2-dump.git",
+                "reference": "6865c2064d72b8361e0d7adfa6f11aa58608ef93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Hzhihua/yii2-dump/zipball/6865c2064d72b8361e0d7adfa6f11aa58608ef93",
+                "reference": "6865c2064d72b8361e0d7adfa6f11aa58608ef93",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "hzhihua\\dump\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Hzhihua",
+                    "email": "cnzhihua@gmail.com",
+                    "homepage": "https://github.com/Hzhihua/yii2-dump"
+                }
+            ],
+            "description": "Generate the schema from an existing database",
+            "homepage": "https://github.com/Hzhihua/yii2-dump",
+            "keywords": [
+                "command",
+                "database",
+                "extension",
+                "generator",
+                "migration",
+                "yii2"
+            ],
+            "time": "2018-05-02T06:41:55+00:00"
         },
         {
             "name": "myclabs/deep-copy",
