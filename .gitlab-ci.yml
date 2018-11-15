@@ -25,9 +25,7 @@
 #   TX_LB_LT_ID_PROD          腾讯云CLB负载均衡监听器ID（生产环境）
 #   TX_LB_LT_ID_PRE           腾讯云CLB负载均衡监听器ID（预发布环境）
 ###################################################
-
 image: gengxiankun/build:latest
-
 variables:
   # 发布版本库
   BUILD_PATH: /data/build_release/
@@ -43,13 +41,11 @@ variables:
   SERVERS_PROD: WEB_001,WEB_002
   # 线上版本保留数
   KEEP_VERSION_NUM: 10
-
 stages:
   - test
   - build
   - deploy
   - release
-
 before_script:
   - if [ "$CI_COMMIT_REF_NAME" == 'master' ]; then 
   -   APP_ENV='production'
