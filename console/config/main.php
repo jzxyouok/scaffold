@@ -20,6 +20,14 @@ return [
             'class' => 'yii\console\controllers\FixtureController',
             'namespace' => 'common\fixtures',
           ],
+        'dump' => [
+            'class' => 'hzhihua\dump\DumpController',
+            'db' => 'db',
+            'templateFile' => '@vendor/hzhihua/yii2-dump/templates/migration.php',
+            'generatePath' => '@console/migrations',
+            'filePrefix' => 'yiiplus',
+            'tableOptions' => 'ENGINE=InnoDB CHARACTER SET=utf8 COLLATE=utf8_unicode_ci',
+        ],
     ],
     'components' => [
         'log' => [
