@@ -51,6 +51,7 @@ services:
       - ./docker/runtime/var_lib_mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=yiiplus
     restart: always
   redis:
     container_name: redis

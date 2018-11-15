@@ -15,8 +15,9 @@
 #   TX_SECRET_ID              腾讯云CLB负载均衡监听器ID
 #   TX_SECRET_KEY             腾讯云CLB负载均衡监听器ID
 #   TEST_SSH_SERVER           测试服务器（root@192.168.1.101）
+#   SIMU_SSH_SERVER           仿真服务器（root@192.168.1.102）
 #   ${ServerName}_TX_LB_IID   腾讯云CVM云服务器的唯一ID
-#   ${ServerName}_SSH_SERVER  生产服务器（root@192.168.1.102）
+#   ${ServerName}_SSH_SERVER  生产服务器（root@192.168.1.103）
 # Project
 #   HTTP_PORT                 http 端口 (8081)
 #   HTTPS_PORT                https 端口 (4431)
@@ -42,13 +43,19 @@ variables:
   RUNTIME_PATH: /data/runtime/
   # 测试服务器名称，例:TEST
   SERVERS_TEST: TEST
+  # 仿真服务器名称，例:SIMU
+  SERVERS_SIMU: SIMU
   # 生产服务器名称，例如:WEB_001,WEB_002
   SERVERS_PROD: WEB_001,WEB_002
   # 线上版本保留数
   KEEP_VERSION_NUM: 10
 
 before_script:
-  - if [ "$CI_COMMIT_REF_NAME" == 'master' ]; then APP_ENV='production'; else APP_ENV='testing'; fi
+  - if [ "$CI_COMMIT_REF_NAME" == 'master' ]; then 
+  -   APP_ENV='production'
+  - else
+  -   APP_ENV='${CI_COMMIT_REF_NAME}'
+  - fi
 
 ##################### test #####################
 codeview:phpcs:
@@ -61,7 +68,6 @@ codeview:phpcs:
       - simulation
       - master
       - tags
-
 codeview:phpmd:
   stage: test
   script:
@@ -72,7 +78,6 @@ codeview:phpmd:
       - simulation
       - master
       - tags
-
 codeview:codequality:
   stage: test
   image: docker:latest
@@ -88,7 +93,6 @@ codeview:codequality:
       - tags
   allow_failure: true
   when: manual
-
 # test:unit:
 #   stage: test
 #   services:
@@ -100,8 +104,6 @@ codeview:codequality:
 #   variables:
 #     MYSQL_ROOT_PASSWORD: root
 #     MYSQL_DATABASE: yiiplus
-#     MYSQL_USER: web
-#     MYSQL_PASSWORD: web
 #   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
 #   script:
 #     - php init --env=development --overwrite=y
@@ -113,7 +115,6 @@ codeview:codequality:
 #     untracked: true
 #     paths:
 #         - ${CI_PROJECT_DIR}/tests/_output
-
 # test:api:
 #   stage: test
 #   services:
@@ -125,8 +126,6 @@ codeview:codequality:
 #   variables:
 #     MYSQL_ROOT_PASSWORD: root
 #     MYSQL_DATABASE: yiiplus
-#     MYSQL_USER: web
-#     MYSQL_PASSWORD: web
 #   script:
 #     - php init --env=development --overwrite=y
 #     - ./yii migrate/up --interactive=0
@@ -141,29 +140,6 @@ codeview:codequality:
 #       - ${CI_PROJECT_DIR}/tests/_output
 
 ##################### build #####################
-package:vendor:
-  stage: build
-  script:
-    - if [ "$CI_COMMIT_REF_NAME" == 'master' ]; then 
-    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
-    -   composer dump-autoload --optimize
-    - else
-    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest -vvv
-    -   composer dump-autoload --optimize
-    - fi
-  artifacts:
-    name: "${CI_PROJECT_NAME}"
-    untracked: false
-    paths:
-      - vendor
-  only:
-    refs:
-      - testing
-      - simulation
-      - master
-    changes:
-      - composer.lock
-      - composer.json
 package:code:
   stage: build
   script:
@@ -201,7 +177,30 @@ package:code:
       - testing
       - simulation
       - master
-
+package:vendor:
+  stage: build
+  retry: 2
+  script:
+    - if [ "$CI_COMMIT_REF_NAME" == 'master' ]; then 
+    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
+    -   composer dump-autoload --optimize
+    - else
+    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest -vvv
+    -   composer dump-autoload --optimize
+    - fi
+  artifacts:
+    name: "${CI_PROJECT_NAME}"
+    untracked: false
+    paths:
+      - vendor
+  only:
+    refs:
+      - testing
+      - simulation
+      - master
+    changes:
+      - composer.lock
+      - composer.json
 .build-docker:
   stage: build
   image: docker:latest
@@ -216,7 +215,6 @@ package:code:
       - testing
       - simulation
       - master
-
 build:cgi:
   extends: .build-docker
   variables:
@@ -265,8 +263,6 @@ build:crond:
     -     ssh ${!SSH_SERVER} "if [ ! -d \"${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}\" ]; then mkdir -vp ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime/logs; chmod -R 777 ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime/; fi && ln -sfn ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime ${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA}/${i}/"
     -   done;IFS=$OLDIFS
     - done;IFS=$OLDIFS
-
-# 测试环境
 deploy:test:
   extends: .deploy
   variables:
@@ -274,7 +270,6 @@ deploy:test:
   only:
     refs:
       - testing
-# 仿真环境
 deploy:simu:
   extends: .deploy
   variables:
@@ -282,7 +277,6 @@ deploy:simu:
   only:
     refs:
       - simulation
-# 生产环境
 deploy:prod:
   extends: .deploy
   variables:
@@ -333,76 +327,52 @@ deploy:prod:
     -   ssh ${!SSH_SERVER} "if [ ! -d \"${WEBSITE_PATH}${CI_PROJECT_NAMESPACE}\" ]; then mkdir -vp ${WEBSITE_PATH}${CI_PROJECT_NAMESPACE}; fi && ln -sfn ${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA} ${BUILD_PATH}${CI_PROJECT_PATH}/current-${CI_PROJECT_NAME}.tmp && mv -fT ${BUILD_PATH}${CI_PROJECT_PATH}/current-${CI_PROJECT_NAME}.tmp ${WEBSITE_PATH}${CI_PROJECT_PATH}"
     -   ssh ${!SSH_SERVER} "cd ${WEBSITE_PATH}${CI_PROJECT_PATH}; docker-compose pull; docker-compose up --force-recreate -d"
     - done;IFS=$OLDIFS
-
-# 测试环境
+  environment:
+    name: ${APP_ENV}
 release:test:
   extends: .release
   variables:
     SERVERS: ${SERVERS_TEST}
-  after_script:
-    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"测试环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":false}}"
   only:
     refs:
       - testing
-  environment:
-    name: testing
-# 仿真环境
 release:simu:
   extends: .release
   variables:
     SERVERS: ${SERVERS_SIMU}
-  after_script:
-    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"测试环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":false}}"
   only:
     refs:
       - simulation
-  environment:
-    name: simulation
-# 预发布环境
 release:pre:
   extends: .release
   variables:
     CI_ENV: pre
   script: *phpclb
-  after_script:
-    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"预发布环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":false}}"
   only:
     refs:
       - master
-  environment:
-    name: production
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /skip-pre-release/
-# 生产环境（手动发布）
 release:prod-manual:
   extends: .release
   variables:
     CI_ENV: prod
   script: *phpclb
-  after_script:
-    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"生产环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":true}}"
   only:
     refs:
       - master
-  when: manual
-  environment:
-    name: production
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /skip-pre-release/
-# 生产环境（自动发布）
+  when: manual
 release:prod-auto:
   extends: .release
   variables:
     CI_ENV: prod
   script: *phpclb
-  after_script:
-    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"生产环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":true}}"
   only:
     refs:
       - master
     variables:
       - $CI_COMMIT_MESSAGE =~ /skip-pre-release/
-  environment:
-    name: production
