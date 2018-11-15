@@ -3,7 +3,7 @@
 #
 # YiiPlus Scaffold
 # Application  [common console backend frontend app]
-# Environments [development testing production]
+# Environments [development testing simulation production]
 # 
 # 系统定义变量
 # Group
@@ -57,7 +57,8 @@ codeview:phpcs:
     - phpcs --standard=PSR2 --ignore=tests,docs/,docker/,vendor/,console/migrations -n --colors ./
   except:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
       - tags
 
@@ -67,7 +68,8 @@ codeview:phpmd:
     - phpmd environments,common,console,backend,frontend,api text phpmd.xml --exclude tests,docs/,docker/,vendor/,console/migrations
   except:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
       - tags
 
@@ -80,7 +82,8 @@ codeview:codequality:
     - docker run --env CODECLIMATE_CODE="$VOLUME_PATH" -v /tmp/cc:/tmp/cc -v $VOLUME_PATH:/code -v /var/run/docker.sock:/var/run/docker.sock codeclimate/codeclimate analyze -f text
   except:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
       - tags
   allow_failure: true
@@ -155,12 +158,12 @@ package:vendor:
       - vendor
   only:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
     changes:
       - composer.lock
       - composer.json
-
 package:code:
   stage: build
   script:
@@ -195,7 +198,8 @@ package:code:
       - docker-compose.yaml
   only:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
 
 .build-docker:
@@ -209,7 +213,8 @@ package:code:
     - docker rmi ${DOCKER_REGISTRY_URL}/${CI_PROJECT_PATH}/${APP_ENV}/${DOCKER_NAME}
   only:
     refs:
-      - develop
+      - testing
+      - simulation
       - master
 
 build:cgi:
@@ -219,7 +224,6 @@ build:cgi:
   only:
     changes:
       - docker/files/cgi/*
-
 build:proxy:
   extends: .build-docker
   variables:
@@ -227,7 +231,6 @@ build:proxy:
   only:
     changes:
       - docker/files/proxy/*
-
 build:crond:
   extends: .build-docker
   variables:
@@ -263,15 +266,24 @@ build:crond:
     -   done;IFS=$OLDIFS
     - done;IFS=$OLDIFS
 
-deploy:develop:
+# 测试环境
+deploy:test:
   extends: .deploy
   variables:
     SERVERS: ${SERVERS_TEST}
   only:
     refs:
-      - develop
-
-deploy:master:
+      - testing
+# 仿真环境
+deploy:simu:
+  extends: .deploy
+  variables:
+    SERVERS: ${SERVERS_SIMU}
+  only:
+    refs:
+      - simulation
+# 生产环境
+deploy:prod:
   extends: .deploy
   variables:
     SERVERS: ${SERVERS_PROD}
@@ -300,7 +312,6 @@ deploy:master:
     -   fi
     -   sleep 10 # 解决腾讯云“该负载均衡正在执行上一次操作，请稍等再试”
     - done;IFS=$OLDIFS
-
 .release:
   stage: release
   variables:
@@ -323,6 +334,7 @@ deploy:master:
     -   ssh ${!SSH_SERVER} "cd ${WEBSITE_PATH}${CI_PROJECT_PATH}; docker-compose pull; docker-compose up --force-recreate -d"
     - done;IFS=$OLDIFS
 
+# 测试环境
 release:test:
   extends: .release
   variables:
@@ -331,10 +343,22 @@ release:test:
     - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"测试环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":false}}"
   only:
     refs:
-      - develop
+      - testing
   environment:
     name: testing
-
+# 仿真环境
+release:simu:
+  extends: .release
+  variables:
+    SERVERS: ${SERVERS_SIMU}
+  after_script:
+    - test -n "${DT_ACCESS_TOKEN}" && curl "https://oapi.dingtalk.com/robot/send?access_token={$DT_ACCESS_TOKEN}" -H 'Content-Type:application/json' -d "{\"msgtype\":\"text\",\"text\":{\"content\":\"测试环境部署完成 \\n - 标题：${CI_COMMIT_TITLE} \\n - 描述：${CI_COMMIT_DESCRIPTION} \\n - 项目：${CI_PROJECT_URL} \\n - 分支：${CI_COMMIT_REF_NAME} \\n - 集成：${CI_PIPELINE_URL} \\n \"},\"at\":{\"atMobiles\":[\"13888888888\"],\"isAtAll\":false}}"
+  only:
+    refs:
+      - simulation
+  environment:
+    name: simulation
+# 预发布环境
 release:pre:
   extends: .release
   variables:
@@ -350,8 +374,8 @@ release:pre:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /skip-pre-release/
-
-release:prod:
+# 生产环境（手动发布）
+release:prod-manual:
   extends: .release
   variables:
     CI_ENV: prod
@@ -367,8 +391,8 @@ release:prod:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /skip-pre-release/
-
-release:
+# 生产环境（自动发布）
+release:prod-auto:
   extends: .release
   variables:
     CI_ENV: prod
