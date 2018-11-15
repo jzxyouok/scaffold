@@ -97,10 +97,7 @@ environments/            contains environment-based overrides
     #            "github.com": "<token>"
     #        }
     #    }
-    composer run-script build
-    
-    # 初始化数据库
-    docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'
+    composer run-script docker:build
 
     # 代码规范检查
     ./vendor/bin/phpcs --standard=PSR2 --ignore=tests,docs/,docker/,vendor/,console/migrations,backend/runtime,frontend/runtime,api/runtime,console/runtime,frontend/web/assets,backend/web/assets,api/web/assets -n --colors ./
