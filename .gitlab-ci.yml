@@ -2,7 +2,7 @@
 # 《YiiPlus脚手架》持续集成配置
 #
 # YiiPlus Scaffold
-# Application  [common console backend frontend app]
+# Application  [common console backend frontend api]
 # Environments [development testing simulation production]
 # 
 # 系统定义变量
@@ -130,14 +130,14 @@ codeview:codequality:
 #   script:
 #     - php init --env=development --overwrite=y
 #     - ./yii migrate/up --interactive=0
-#     - php -S localhost:80 --docroot app/tests &>/dev/null&
-#     - codecept run app -c tests
+#     - php -S localhost:80 --docroot api/tests &>/dev/null&
+#     - codecept run api -c tests
 #   artifacts:
 #     name: "debug"
 #     when: on_failure
 #     untracked: true
 #     paths:
-#       - ${CI_PROJECT_DIR}/app/runtime
+#       - ${CI_PROJECT_DIR}/api/runtime
 #       - ${CI_PROJECT_DIR}/tests/_output
 
 ##################### build #####################
@@ -183,7 +183,7 @@ package:code:
     - rm -rf console/runtime
     - rm -rf backend/web/assets/* backend/runtime backend/tests
     - rm -rf frontend/web/assets/* frontend/runtime frontend/tests
-    - rm -rf app/web/assets/* app/runtime app/tests
+    - rm -rf api/web/assets/* api/runtime api/tests
   artifacts:
     name: "${CI_PROJECT_NAME}"
     untracked: false
@@ -192,7 +192,7 @@ package:code:
       - console
       - backend
       - frontend
-      - app
+      - api
       - yii
       - docker
       - docker-compose.yaml
@@ -244,7 +244,7 @@ build:crond:
   stage: deploy
   variables:
     GIT_STRATEGY: none
-    RUNTIME_APPS: console,backend,frontend,app
+    RUNTIME_APPS: console,backend,frontend,api
   dependencies:
     - package:vendor
     - package:code
